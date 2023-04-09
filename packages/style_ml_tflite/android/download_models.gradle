@@ -1,0 +1,13 @@
+task downloadModelPredict(type: Download) {
+    src 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/task_library/style_transfer/android/magenta_arbitrary-image-stylization-v1-256_fp16_prediction_1.tflite'
+    dest project.ext.ASSET_DIR + '/style-predict-fp16.tflite'
+    overwrite false
+}
+
+task downloadModelTransfer(type: Download) {
+    src 'https://storage.googleapis.com/download.tensorflow.org/models/tflite/task_library/style_transfer/android/magenta_arbitrary-image-stylization-v1-256_fp16_transfer_1.tflite'
+    dest project.ext.ASSET_DIR + '/style-transfer-fp16.tflite'
+    overwrite false
+}
+
+preBuild.dependsOn downloadModelPredict, downloadModelTransfer

@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
+import 'package:image/image.dart' as img;
 
 class CameraWidget extends StatefulWidget {
   const CameraWidget({super.key, this.onPicture});
 
-  final void Function(String)? onPicture;
+  final void Function(img.Image)? onPicture;
 
   @override
   State<StatefulWidget> createState() => _CameraWidgetState();
@@ -41,14 +42,10 @@ class _CameraWidgetState extends State<CameraWidget> {
 
     return Stack(
       children: [
-        Transform.scale(
-          scaleY: cameraRatio / deviceRatio,
-          scaleX: 0.5 * cameraRatio / deviceRatio,
-          child: Center(
-            child: AspectRatio(
-              aspectRatio: cameraRatio,
-              child: CameraPreview(_controller!),
-            ),
+        Center(
+          child: AspectRatio(
+            aspectRatio: 1 / cameraRatio,
+            child: CameraPreview(_controller!),
           ),
         ),
         Positioned(
@@ -88,7 +85,7 @@ class _CameraWidgetState extends State<CameraWidget> {
       selectedCamera,
       ResolutionPreset.medium,
       enableAudio: false,
-      imageFormatGroup: ImageFormatGroup.bgra8888,
+      imageFormatGroup: ImageFormatGroup.jpeg,
     );
 
     await controller.initialize();
@@ -131,12 +128,18 @@ class _CameraWidgetState extends State<CameraWidget> {
   }
 
   Future<void> _takePicture() async {
-    final image = await _controller!.takePicture();
+    final imageFile = await _controller!.takePicture();
+    final image = await imageFile
+        .readAsBytes()
+        .then((bytes) => img.JpegDecoder().decode(bytes))
+        .then((image) => _lensDirection == CameraLensDirection.front
+            ? img.flipHorizontal(image!)
+            : image!);
 
-    debugPrint('>> saved: ${image.path}');
+    debugPrint('>> saved: ${imageFile.path}');
 
     if (widget.onPicture != null) {
-      widget.onPicture!(image.path);
+      widget.onPicture!(image);
     }
   }
 }

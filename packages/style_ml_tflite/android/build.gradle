@@ -1,0 +1,58 @@
+group 'com.example.style_ml_tflite'
+version '1.0-SNAPSHOT'
+
+buildscript {
+    ext.kotlin_version = '1.7.10'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies {
+        classpath 'com.android.tools.build:gradle:7.2.0'
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath("de.undercouch:gradle-download-task:5.4.0")
+    }
+}
+
+allprojects {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+
+apply plugin: 'com.android.library'
+apply plugin: 'kotlin-android'
+apply plugin: 'de.undercouch.download'
+
+project.ext.ASSET_DIR = projectDir.parentFile.toString() + '/assets'
+apply from: 'download_models.gradle'
+
+android {
+    compileSdkVersion 31
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    defaultConfig {
+        minSdkVersion 19
+    }
+}
+
+dependencies {
+    // Tensorflow Lite dependencies for Google Play services
+    implementation 'com.google.android.gms:play-services-tflite-java:16.0.1'
+    //implementation 'com.google.android.gms:play-services-tflite-gpu:16.1.0'
+    implementation 'com.google.android.gms:play-services-tflite-support:16.0.1'
+}
