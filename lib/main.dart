@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
 import 'package:style_ml_tflite/style_ml_tflite.dart';
+
 import 'camera.dart';
 
 main() {
@@ -22,7 +23,7 @@ class App extends StatelessWidget {
       ),
       routes: {
         '/': (context) => const CameraPage(),
-        '/style': (context) => const StylePage(),
+        '/style': (context) => StylePage(),
       },
     );
   }
@@ -47,20 +48,21 @@ class CameraPage extends StatelessWidget {
 }
 
 class StylePage extends StatefulWidget {
-  const StylePage({super.key});
+  StylePage({super.key});
+
+  final styleTransfer = StyleMlTflite();
+  final styleNames = [
+    'davinci-mona-lisa',
+    'kandinsky-black-and-violet',
+    'monet-sunrise',
+    'van-gogh-starry-night'
+  ];
 
   @override
   State<StylePage> createState() => _StylePageState();
 }
 
 class _StylePageState extends State<StylePage> {
-  static final _styleTransfer = StyleMlTflite();
-  final _styleNames = [
-    'davinci-mona-lisa',
-    'kandinsky-black-and-violet',
-    'monet-sunrise',
-    'van-gogh-starry-night'
-  ];
   int _styleSelected = 0;
 
   @override
@@ -93,9 +95,9 @@ class _StylePageState extends State<StylePage> {
               padding: const EdgeInsets.all(10),
               child: ListView.separated(
                 scrollDirection: Axis.horizontal,
-                itemCount: _styleNames.length,
+                itemCount: widget.styleNames.length,
                 itemBuilder: ((context, index) {
-                  final name = _styleNames[index];
+                  final name = widget.styleNames[index];
                   return GestureDetector(
                     child: Image.asset('assets/$name.jpg'),
                     onTap: () {
@@ -124,11 +126,11 @@ class _StylePageState extends State<StylePage> {
 
   Future<img.Image?> runStyleTransfer(img.Image contentImage) async {
     final styleImage = await rootBundle
-        .load('assets/${_styleNames[_styleSelected]}.jpg')
+        .load('assets/${widget.styleNames[_styleSelected]}.jpg')
         .then((asset) => asset.buffer.asUint8List())
         .then((bytes) => img.JpegDecoder().decode(bytes));
 
-    return _styleTransfer.transfer(styleImage!, contentImage);
+    return await widget.styleTransfer.transfer(styleImage!, contentImage);
   }
 }
 
