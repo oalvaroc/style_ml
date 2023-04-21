@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:style_ml/pages/home_page.dart';
 import 'pages/camera_page.dart';
 import 'pages/login_page.dart';
 import 'pages/style_page.dart';
@@ -22,6 +23,7 @@ class App extends StatelessWidget {
       routes: {
         '/': (context) => const LoginPage(),
         '/camera': (context) => const CameraPage(),
+        '/home': (context) => const HomePage(),
         '/style': (context) => StylePage(),
       },
     );

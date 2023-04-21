@@ -19,7 +19,7 @@ class _LoginPageState extends State<LoginPage> {
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
           if (state.status == LoginStatus.success) {
-            Navigator.of(context).pushNamed('/camera');
+            Navigator.of(context).pushNamed('/home');
           }
         },
         child: Scaffold(
