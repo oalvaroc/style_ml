@@ -40,6 +40,9 @@ dependencies:
   style_ml_tflite:
     path: ./packages/style_ml_tflite
   image: ^4.0.15
+  flutter_bloc: ^8.1.2
+  bloc: ^8.1.1
+  meta: ^1.8.0
 
 dev_dependencies:
   flutter_test:
