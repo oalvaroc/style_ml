@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'pages/camera_page.dart';
+import 'pages/login_page.dart';
 import 'pages/style_page.dart';
 
 main() {
@@ -19,7 +20,8 @@ class App extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       routes: {
-        '/': (context) => const CameraPage(),
+        '/': (context) => const LoginPage(),
+        '/camera': (context) => const CameraPage(),
         '/style': (context) => StylePage(),
       },
     );
