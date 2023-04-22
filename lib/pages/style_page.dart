@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as img;
 
+import '../widgets/galleryGrid/bloc/gallery_posts_bloc.dart';
 import '../widgets/styledImage/bloc/styled_image_bloc.dart';
 import '../widgets/styledImage/styled_image.dart';
 
@@ -16,8 +17,12 @@ class StylePage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Create'),
       ),
-      body: BlocProvider<StyledImageBloc>(
-        create: (context) => StyledImageBloc(source: args.image),
+      body: MultiBlocProvider(
+        providers: [
+          BlocProvider<StyledImageBloc>(
+            create: (context) => StyledImageBloc(source: args.image),
+          ),
+        ],
         child: Center(
           child: Padding(
             padding: const EdgeInsets.all(10),
@@ -185,6 +190,7 @@ class ActionButtons extends StatelessWidget {
     return BlocBuilder<StyledImageBloc, StyledImageState>(
       builder: (context, state) {
         final bloc = BlocProvider.of<StyledImageBloc>(context);
+        final result = state.result;
 
         return Row(
           mainAxisAlignment: MainAxisAlignment.spaceAround,
@@ -196,12 +202,19 @@ class ActionButtons extends StatelessWidget {
               label: const Text('Run'),
               icon: const Icon(Icons.play_arrow),
             ),
-            ElevatedButton.icon(
-              onPressed: () {
-                Navigator.of(context).pop();
+            BlocBuilder<GalleryPostsBloc, GalleryPostsState>(
+              builder: (context, state) {
+                final gallery = BlocProvider.of<GalleryPostsBloc>(context);
+
+                return ElevatedButton.icon(
+                  onPressed: () {
+                    gallery.add(GalleryPostsCreated(image: result!));
+                    Navigator.of(context).pop();
+                  },
+                  label: const Text('Save'),
+                  icon: const Icon(Icons.save),
+                );
               },
-              label: const Text('Save'),
-              icon: const Icon(Icons.save),
             ),
           ],
         );
