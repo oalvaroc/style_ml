@@ -1,92 +1,212 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as img;
-import 'package:style_ml_tflite/style_ml_tflite.dart';
 
-class StylePage extends StatefulWidget {
-  StylePage({super.key});
+import '../widgets/styledImage/bloc/styled_image_bloc.dart';
+import '../widgets/styledImage/styled_image.dart';
 
-  final styleTransfer = StyleMlTflite();
-  final styleNames = [
-    'davinci-mona-lisa',
-    'kandinsky-black-and-violet',
-    'monet-sunrise',
-    'van-gogh-starry-night'
-  ];
-
-  @override
-  State<StylePage> createState() => _StylePageState();
-}
-
-class _StylePageState extends State<StylePage> {
-  int _styleSelected = 0;
+class StylePage extends StatelessWidget {
+  const StylePage({super.key});
 
   @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as StylePageArgs;
 
     return Scaffold(
-      body: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            FutureBuilder(
-              future: runStyleTransfer(args.image),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.done) {
-                  final imageBytes = img.JpegEncoder().encode(snapshot.data!);
-
-                  return Image.memory(imageBytes);
-                } else {
-                  return const Padding(
-                    padding: EdgeInsets.all(100),
-                    child: CircularProgressIndicator(),
-                  );
-                }
-              },
+      appBar: AppBar(
+        title: const Text('Create'),
+      ),
+      body: BlocProvider<StyledImageBloc>(
+        create: (context) => StyledImageBloc(source: args.image),
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(5),
+                    child: const FittedBox(
+                      child: StyledImage(),
+                    ),
+                  ),
+                ),
+                const StyleList(),
+                const MixSlider(),
+                const ActionButtons(),
+              ],
             ),
-            Container(
-              //width: MediaQuery.of(context).size.width,
-              height: 200,
-              padding: const EdgeInsets.all(10),
-              child: ListView.separated(
-                scrollDirection: Axis.horizontal,
-                itemCount: widget.styleNames.length,
-                itemBuilder: ((context, index) {
-                  final name = widget.styleNames[index];
-                  return GestureDetector(
-                    child: Image.asset('assets/$name.jpg'),
-                    onTap: () {
-                      setState(() {
-                        _styleSelected = index;
-                      });
-                    },
-                  );
-                }),
-                separatorBuilder: (context, index) {
-                  return const SizedBox(width: 10);
-                },
-              ),
-            ),
-            ElevatedButton(
-              child: const Text('Go back'),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-            ),
-          ],
+          ),
         ),
       ),
     );
   }
+}
 
-  Future<img.Image?> runStyleTransfer(img.Image contentImage) async {
-    final styleImage = await rootBundle
-        .load('assets/${widget.styleNames[_styleSelected]}.jpg')
-        .then((asset) => asset.buffer.asUint8List())
-        .then((bytes) => img.JpegDecoder().decode(bytes));
+class StyleList extends StatelessWidget {
+  const StyleList({super.key});
 
-    return await widget.styleTransfer.transfer(styleImage!, contentImage);
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StyledImageBloc, StyledImageState>(
+      buildWhen: (previous, current) {
+        return previous.style != current.style;
+      },
+      builder: (context, state) {
+        final bloc = BlocProvider.of<StyledImageBloc>(context);
+
+        return Expanded(
+          child: Card(
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Column(
+                children: [
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      'Select Style',
+                      style: Theme.of(context).textTheme.titleLarge,
+                    ),
+                  ),
+                  Expanded(
+                    child: ListView.separated(
+                      padding: const EdgeInsets.symmetric(vertical: 8.0),
+                      scrollDirection: Axis.horizontal,
+                      itemCount: StyleNames.values.length,
+                      itemBuilder: ((context, index) {
+                        final style = StyleNames.values[index];
+
+                        return Stack(
+                          alignment: Alignment.center,
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(10),
+                              child: Material(
+                                child: Ink.image(
+                                  image: AssetImage(style.path),
+                                  width: 150,
+                                  fit: BoxFit.cover,
+                                  colorFilter: state.style == style
+                                      ? const ColorFilter.mode(
+                                          Colors.black38,
+                                          BlendMode.darken,
+                                        )
+                                      : null,
+                                  child: InkWell(
+                                    onTap: () {
+                                      bloc.add(
+                                        StyledImageStyleChanged(style),
+                                      );
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Center(
+                              child: Container(
+                                decoration: const ShapeDecoration(
+                                  color: Colors.white,
+                                  shape: CircleBorder(),
+                                ),
+                                child: state.style == style
+                                    ? const Icon(Icons.check)
+                                    : null,
+                              ),
+                            ),
+                          ],
+                        );
+                      }),
+                      separatorBuilder: (context, index) {
+                        return const SizedBox(width: 10);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class MixSlider extends StatelessWidget {
+  const MixSlider({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StyledImageBloc, StyledImageState>(
+      buildWhen: (previous, current) {
+        return previous.mixRatio != current.mixRatio;
+      },
+      builder: (context, state) {
+        final bloc = BlocProvider.of<StyledImageBloc>(context);
+
+        return Card(
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Column(
+              children: [
+                Align(
+                  alignment: Alignment.centerLeft,
+                  child: Text(
+                    'Mix Ratio',
+                    style: Theme.of(context).textTheme.titleLarge,
+                  ),
+                ),
+                Slider(
+                  value: state.mixRatio ?? 0,
+                  min: 0.0,
+                  max: 1.0,
+                  onChanged: (value) {
+                    bloc.add(StyledImageMixRatioChanged(value));
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+}
+
+class ActionButtons extends StatelessWidget {
+  const ActionButtons({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<StyledImageBloc, StyledImageState>(
+      builder: (context, state) {
+        final bloc = BlocProvider.of<StyledImageBloc>(context);
+
+        return Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            FilledButton.icon(
+              onPressed: () {
+                bloc.add(StyledImageRun());
+              },
+              label: const Text('Run'),
+              icon: const Icon(Icons.play_arrow),
+            ),
+            ElevatedButton.icon(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              label: const Text('Save'),
+              icon: const Icon(Icons.save),
+            ),
+          ],
+        );
+      },
+    );
   }
 }
 

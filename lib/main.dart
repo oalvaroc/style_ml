@@ -24,7 +24,7 @@ class App extends StatelessWidget {
         '/': (context) => const LoginPage(),
         '/camera': (context) => const CameraPage(),
         '/home': (context) => const HomePage(),
-        '/style': (context) => StylePage(),
+        '/style': (context) => const StylePage(),
       },
     );
   }

@@ -17,7 +17,7 @@ class CameraPage extends StatelessWidget {
         child: BlocListener<CameraBloc, CameraState>(
           listener: (context, state) {
             if (state.image != null) {
-              Navigator.of(context).pushNamed(
+              Navigator.of(context).pushReplacementNamed(
                 '/style',
                 arguments: StylePageArgs(state.image!),
               );
