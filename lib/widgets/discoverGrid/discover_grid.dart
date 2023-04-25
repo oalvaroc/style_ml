@@ -25,10 +25,45 @@ class _DiscoverGridState extends State<DiscoverGrid> {
           children: [
             ClipRRect(
               borderRadius: BorderRadius.circular(5),
-              child: FittedBox(
-                fit: BoxFit.cover,
-                clipBehavior: Clip.antiAlias,
-                child: Image.asset('assets/van-gogh-starry-night.jpg'),
+              child: Material(
+                child: Ink.image(
+                  image: const AssetImage('assets/van-gogh-starry-night.jpg'),
+                  fit: BoxFit.cover,
+                  child: InkWell(
+                    onTap: () {
+                      showDialog(
+                        context: context,
+                        builder: (context) {
+                          return Dialog(
+                            child: Stack(
+                              children: [
+                                Image.asset('assets/van-gogh-starry-night.jpg'),
+                                Positioned(
+                                  top: 0,
+                                  right: 0,
+                                  child: IconButton(
+                                    onPressed: () {
+                                      Navigator.of(context).pop();
+                                    },
+                                    icon: const Icon(Icons.close),
+                                    style: ButtonStyle(
+                                      shape: MaterialStateProperty.all(
+                                          const CircleBorder()),
+                                      backgroundColor:
+                                          MaterialStateProperty.all(
+                                        Colors.white54,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        },
+                      );
+                    },
+                  ),
+                ),
               ),
             ),
             Positioned(

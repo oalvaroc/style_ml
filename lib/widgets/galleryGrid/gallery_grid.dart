@@ -36,10 +36,45 @@ class _GalleryGridState extends State<GalleryGrid> {
               children: [
                 ClipRRect(
                   borderRadius: BorderRadius.circular(5),
-                  child: FittedBox(
-                    fit: BoxFit.cover,
-                    clipBehavior: Clip.antiAlias,
-                    child: Image.memory(post.image),
+                  child: Material(
+                    child: Ink.image(
+                      image: MemoryImage(post.image),
+                      fit: BoxFit.cover,
+                      child: InkWell(
+                        onTap: () {
+                          showDialog(
+                            context: context,
+                            builder: (context) {
+                              return Dialog(
+                                child: Stack(
+                                  children: [
+                                    Image.memory(post.image),
+                                    Positioned(
+                                      top: 0,
+                                      right: 0,
+                                      child: IconButton(
+                                        onPressed: () {
+                                          Navigator.of(context).pop();
+                                        },
+                                        icon: const Icon(Icons.close),
+                                        style: ButtonStyle(
+                                          shape: MaterialStateProperty.all(
+                                              const CircleBorder()),
+                                          backgroundColor:
+                                              MaterialStateProperty.all(
+                                            Colors.white54,
+                                          ),
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            },
+                          );
+                        },
+                      ),
+                    ),
                   ),
                 ),
                 Positioned(
