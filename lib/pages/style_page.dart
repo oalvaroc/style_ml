@@ -210,6 +210,11 @@ class ActionButtons extends StatelessWidget {
                   onPressed: () {
                     gallery.add(GalleryPostsCreated(image: result!));
                     Navigator.of(context).pop();
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        content: Text('Post saved'),
+                      ),
+                    );
                   },
                   label: const Text('Save'),
                   icon: const Icon(Icons.save),

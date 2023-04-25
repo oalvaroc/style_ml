@@ -6,13 +6,13 @@ class GalleryPostsState {
 
   const GalleryPostsState.initial() : this(posts: const []);
 
-  final List<Uint8List> posts;
+  final List<Post> posts;
 
   // TODO: remove this event when backend integration is implemented
   final bool isInit;
 
   GalleryPostsState copyWith({
-    List<Uint8List>? posts,
+    List<Post>? posts,
     bool? isInit,
   }) {
     return GalleryPostsState(
@@ -20,4 +20,12 @@ class GalleryPostsState {
       isInit: isInit ?? this.isInit,
     );
   }
+}
+
+@immutable
+class Post {
+  const Post({required this.image, required this.id});
+
+  final Uint8List image;
+  final int id;
 }

@@ -29,6 +29,8 @@ class _GalleryGridState extends State<GalleryGrid> {
           ),
           itemCount: state.posts.length,
           itemBuilder: (context, index) {
+            final post = state.posts[index];
+
             return Stack(
               fit: StackFit.passthrough,
               children: [
@@ -37,7 +39,7 @@ class _GalleryGridState extends State<GalleryGrid> {
                   child: FittedBox(
                     fit: BoxFit.cover,
                     clipBehavior: Clip.antiAlias,
-                    child: Image.memory(state.posts[index]),
+                    child: Image.memory(post.image),
                   ),
                 ),
                 Positioned(
@@ -64,8 +66,14 @@ class _GalleryGridState extends State<GalleryGrid> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  bloc.add(GalleryPostsDeleted(id: index));
+                                  bloc.add(GalleryPostsDeleted(id: post.id));
                                   Navigator.of(context).pop();
+                                  ScaffoldMessenger.of(context).showSnackBar(
+                                    const SnackBar(
+                                      content: Text('Post deleted'),
+                                      showCloseIcon: true,
+                                    ),
+                                  );
                                 },
                                 child: const Text(
                                   'Delete',
