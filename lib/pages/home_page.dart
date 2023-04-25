@@ -22,6 +22,12 @@ class _HomePageState extends State<HomePage> {
         actions: [
           IconButton(
             onPressed: () {
+              Navigator.of(context).pushNamed('/about');
+            },
+            icon: const Icon(Icons.info_outline),
+          ),
+          IconButton(
+            onPressed: () {
               Navigator.of(context).pop();
             },
             icon: const Icon(Icons.logout),
