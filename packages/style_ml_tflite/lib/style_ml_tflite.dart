@@ -7,7 +7,8 @@ class StyleMlTflite {
     return StyleMlTflitePlatform.instance.getPlatformVersion();
   }
 
-  Future<Image?> transfer(Image styleImage, Image contentImage) {
-    return StyleMlTflitePlatform.instance.transfer(styleImage, contentImage);
+  Future<Image?> transfer(Image styleImage, Image contentImage, double ratio) {
+    return StyleMlTflitePlatform.instance
+        .transfer(styleImage, contentImage, ratio);
   }
 }

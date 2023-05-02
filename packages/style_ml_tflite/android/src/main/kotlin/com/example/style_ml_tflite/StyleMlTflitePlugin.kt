@@ -47,7 +47,9 @@ class StyleMlTflitePlugin : FlutterPlugin, MethodCallHandler {
                 val contentImage = call.argument<ByteArray>("contentImage").let { bytes ->
                     BitmapFactory.decodeByteArray(bytes, 0, bytes!!.size)
                 }
-                styleTransfer.transfer(styleImage, contentImage).let { output ->
+                val ratio = call.argument<Double>("ratio")
+
+                styleTransfer.transfer(styleImage, contentImage, ratio!!.toFloat()).let { output ->
                     val byteStream = ByteArrayOutputStream()
                     output.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
                     result.success(byteStream.toByteArray())

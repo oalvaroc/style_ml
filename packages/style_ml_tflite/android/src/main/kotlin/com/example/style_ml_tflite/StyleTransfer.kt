@@ -3,17 +3,18 @@ package com.example.style_ml_tflite
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Log
+import com.google.android.gms.tasks.Task
 import com.google.android.gms.tasks.Tasks
 import com.google.android.gms.tflite.client.TfLiteInitializationOptions
 import com.google.android.gms.tflite.gpu.support.TfLiteGpu
 import com.google.android.gms.tflite.java.TfLite
-import io.flutter.embedding.engine.plugins.FlutterPlugin.FlutterAssets
 import org.tensorflow.lite.DataType
 import org.tensorflow.lite.InterpreterApi
 import org.tensorflow.lite.InterpreterApi.Options.TfLiteRuntime
 import org.tensorflow.lite.gpu.GpuDelegateFactory
 import org.tensorflow.lite.nnapi.NnApiDelegate
 import org.tensorflow.lite.support.common.FileUtil
+import org.tensorflow.lite.support.common.TensorProcessor
 import org.tensorflow.lite.support.common.ops.DequantizeOp
 import org.tensorflow.lite.support.common.ops.NormalizeOp
 import org.tensorflow.lite.support.image.ImageProcessor
@@ -48,30 +49,42 @@ class StyleTransfer(private val context: Context) {
                     .setEnableGpuDelegateSupport(useGpu)
                     .build()
 
-                TfLite.initialize(context, initOptions)
+                val initTask = TfLite.initialize(context, initOptions)
                     .addOnSuccessListener {
                         loadModels(useGpu)
                     }.addOnFailureListener { e ->
                         Log.e(TAG, e.message ?: "Failed to initialize TensorFlow Lite")
                         throw e
                     }
+                Tasks.await(initTask)
             }
     }
 
-    fun transfer(styleImage: Bitmap, contentImage: Bitmap): Bitmap {
+    fun transfer(styleImage: Bitmap, contentImage: Bitmap, ratio: Float = 0.5f): Bitmap {
         val style = processInputImage(styleImage, inputPredictShape[1], inputPredictShape[2])
         val content = processInputImage(contentImage, inputTransferShape[1], inputTransferShape[2])
+        val contentStyle = processInputImage(contentImage, inputPredictShape[1], inputPredictShape[2])
 
-        val predictOutput = TensorBuffer.createFixedSize(outputPredictShape, DataType.FLOAT32)
-        interpreterPredict.run(style.buffer, predictOutput.buffer)
+        val stylePredictOutput = let {
+            val stylePredictTensor =
+                TensorBuffer.createFixedSize(outputPredictShape, DataType.FLOAT32)
+            interpreterPredict.run(style.buffer, stylePredictTensor.buffer)
 
-        val transferOutput = TensorBuffer.createFixedSize(outputTransferShape, DataType.FLOAT32)
+            val contentPredictTensor =
+                TensorBuffer.createFixedSize(outputPredictShape, DataType.FLOAT32)
+            interpreterPredict.run(contentStyle.buffer, contentPredictTensor.buffer)
+
+            mixStyle(contentPredictTensor, stylePredictTensor, ratio)
+        }
+
+        val transferOutputTensor =
+            TensorBuffer.createFixedSize(outputTransferShape, DataType.FLOAT32)
         interpreterTransfer.runForMultipleInputsOutputs(
-                arrayOf(content.buffer, predictOutput.buffer),
-                mapOf(Pair(0, transferOutput.buffer))
+            arrayOf(content.buffer, stylePredictOutput.buffer),
+            mapOf(Pair(0, transferOutputTensor.buffer))
         )
 
-        return processOutputImage(transferOutput)
+        return processOutputImage(transferOutputTensor)
     }
 
     fun close() {
@@ -112,10 +125,10 @@ class StyleTransfer(private val context: Context) {
         val cropSize = min(width, height)
 
         val imageProcessor = ImageProcessor.Builder()
-                .add(ResizeWithCropOrPadOp(cropSize, cropSize))
-                .add(ResizeOp(targetHeight, targetWidth, ResizeOp.ResizeMethod.BILINEAR))
-                .add(NormalizeOp(0f, 255f))
-                .build()
+            .add(ResizeWithCropOrPadOp(cropSize, cropSize))
+            .add(ResizeOp(targetHeight, targetWidth, ResizeOp.ResizeMethod.BILINEAR))
+            .add(NormalizeOp(0f, 255f))
+            .build()
 
         val tensorImage = TensorImage(DataType.FLOAT32)
         tensorImage.load(image)
@@ -125,8 +138,8 @@ class StyleTransfer(private val context: Context) {
 
     private fun processOutputImage(output: TensorBuffer): Bitmap {
         val imageProcessor = ImageProcessor.Builder()
-                .add(DequantizeOp(0f, 255f))
-                .build()
+            .add(DequantizeOp(0f, 255f))
+            .build()
 
         val tensorImage = TensorImage(DataType.FLOAT32)
         tensorImage.load(output)
@@ -134,4 +147,21 @@ class StyleTransfer(private val context: Context) {
         return imageProcessor.process(tensorImage).bitmap
     }
 
+    private fun mixStyle(styleA: TensorBuffer, styleB: TensorBuffer, ratio: Float): TensorBuffer {
+        val processorA = TensorProcessor.Builder()
+            .add(ScalarMultiplyOp(1 - ratio))
+            .build()
+        val processorB = TensorProcessor.Builder()
+            .add(ScalarMultiplyOp(ratio))
+            .build()
+
+        val bufferA = processorA.process(styleA)
+        val bufferB = processorB.process(styleB)
+
+        val sumProcessor = TensorProcessor.Builder()
+            .add(AddOp(bufferA))
+            .build()
+
+        return sumProcessor.process(bufferB)
+    }
 }

@@ -62,7 +62,11 @@ class StyledImageBloc extends Bloc<StyledImageEvent, StyledImageState> {
         .then((asset) => asset.buffer.asUint8List())
         .then((bytes) => img.JpegDecoder().decode(bytes));
 
-    final resImage = await _styleTransfer.transfer(styleImage!, state.source!);
+    final resImage = await _styleTransfer.transfer(
+      styleImage!,
+      state.source!,
+      state.mixRatio!,
+    );
     return img.encodeJpg(resImage!);
   }
 }

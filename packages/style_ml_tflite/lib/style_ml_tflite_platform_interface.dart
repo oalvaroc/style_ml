@@ -28,7 +28,7 @@ abstract class StyleMlTflitePlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<Image?> transfer(Image styleImage, Image contentImage) {
+  Future<Image?> transfer(Image styleImage, Image contentImage, double ratio) {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 }

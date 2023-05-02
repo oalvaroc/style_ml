@@ -18,15 +18,23 @@ class MethodChannelStyleMlTflite extends StyleMlTflitePlatform {
   }
 
   @override
-  Future<Image?> transfer(Image styleImage, Image contentImage) async {
+  Future<Image?> transfer(
+      Image styleImage, Image contentImage, double ratio) async {
+    debugPrint('> transfer: encoding');
     final style = JpegEncoder().encode(styleImage);
     final content = JpegEncoder().encode(contentImage);
 
+    debugPrint('> transfer: invoking');
     final result = await methodChannel.invokeMethod<Uint8List>(
       'transfer',
-      {'styleImage': style, 'contentImage': content},
+      {
+        'styleImage': style,
+        'contentImage': content,
+        'ratio': ratio,
+      },
     );
 
+    debugPrint('> transfer: decoding');
     if (result != null) {
       return JpegDecoder().decode(result);
     }

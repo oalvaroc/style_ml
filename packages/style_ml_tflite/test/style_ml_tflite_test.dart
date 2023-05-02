@@ -12,7 +12,7 @@ class MockStyleMlTflitePlatform
   Future<String?> getPlatformVersion() => Future.value('42');
 
   @override
-  Future<Image?> transfer(Image styleImage, Image contentImage) {
+  Future<Image?> transfer(Image styleImage, Image contentImage, double ratio) {
     return Future.delayed(
         const Duration(milliseconds: 500), () => Image.empty());
   }
