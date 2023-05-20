@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'bloc/styled_image_bloc.dart';
 
@@ -13,6 +14,8 @@ class StyledImage extends StatefulWidget {
 }
 
 class _StyledImageState extends State<StyledImage> {
+  final _box = Hive.box('style');
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<StyledImageBloc, StyledImageState>(
@@ -21,6 +24,10 @@ class _StyledImageState extends State<StyledImage> {
 
         if (state.isRunning || state.result == null) {
           if (state.result == null) {
+            if (_box.isNotEmpty) {
+              final index = _box.get('style-index');
+              bloc.add(StyledImageStyleChanged(StyleNames.values[index]));
+            }
             bloc.add(StyledImageRun());
           }
 

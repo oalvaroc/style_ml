@@ -20,7 +20,7 @@ class _CameraWidgetState extends State<CameraWidget> {
 
         if (!bloc.isInitialized) {
           bloc.add(CameraStarted());
-          return const CircularProgressIndicator();
+          return const Center(child: CircularProgressIndicator());
         }
 
         final cameraRatio = state.controller!.value.aspectRatio;

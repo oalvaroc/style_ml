@@ -3,18 +3,16 @@ part of 'login_bloc.dart';
 @immutable
 abstract class LoginEvent {}
 
-class LoginPasswordVisibilityToggled extends LoginEvent {}
-
-class LoginEmailChanged extends LoginEvent {
-  LoginEmailChanged(this.email);
+class LoginSubmitted extends LoginEvent {
+  LoginSubmitted({required this.email, required this.password});
 
   final String email;
-}
-
-class LoginPasswordChanged extends LoginEvent {
-  LoginPasswordChanged(this.password);
-
   final String password;
 }
 
-class LoginSubmitted extends LoginEvent {}
+class LoginRestored extends LoginEvent {
+  LoginRestored(this.email, this.password);
+
+  final String email;
+  final String password;
+}

@@ -5,18 +5,14 @@ part 'login_event.dart';
 part 'login_state.dart';
 
 class LoginBloc extends Bloc<LoginEvent, LoginState> {
-  LoginBloc() : super(const LoginState.initial()) {
-    on<LoginPasswordVisibilityToggled>((event, emit) {
-      emit(state.copyWith(isPasswordVisible: !state.isPasswordVisible));
-    });
-    on<LoginEmailChanged>((event, emit) {
-      emit(state.copyWith(email: event.email));
-    });
-    on<LoginPasswordChanged>((event, emit) {
-      emit(state.copyWith(password: event.password));
-    });
+  LoginBloc() : super(const LoginInitial()) {
     on<LoginSubmitted>((event, emit) {
-      emit(state.copyWith(status: LoginStatus.success));
+      emit(LoginSuccess(email: event.email, password: event.password));
+    });
+    on<LoginRestored>((event, emit) {
+      // same as above for now
+      print("> email: ${state.email}  pass: ${state.password}");
+      emit(LoginSuccess(email: event.email, password: event.password));
     });
   }
 }

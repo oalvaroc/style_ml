@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as img;
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../widgets/galleryGrid/bloc/gallery_posts_bloc.dart';
 import '../widgets/styledImage/bloc/styled_image_bloc.dart';
@@ -37,8 +38,8 @@ class StylePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const StyleList(),
-                const MixSlider(),
+                StyleList(),
+                MixSlider(),
                 const ActionButtons(),
               ],
             ),
@@ -50,7 +51,9 @@ class StylePage extends StatelessWidget {
 }
 
 class StyleList extends StatelessWidget {
-  const StyleList({super.key});
+  StyleList({super.key});
+
+  final _box = Hive.box('style');
 
   @override
   Widget build(BuildContext context) {
@@ -103,6 +106,7 @@ class StyleList extends StatelessWidget {
                                       bloc.add(
                                         StyledImageStyleChanged(style),
                                       );
+                                      _box.put('style-index', index);
                                     },
                                   ),
                                 ),
@@ -138,9 +142,9 @@ class StyleList extends StatelessWidget {
 }
 
 class MixSlider extends StatelessWidget {
-  const MixSlider({
-    super.key,
-  });
+  MixSlider({super.key});
+
+  final _box = Hive.box('style');
 
   @override
   Widget build(BuildContext context) {
@@ -150,6 +154,11 @@ class MixSlider extends StatelessWidget {
       },
       builder: (context, state) {
         final bloc = BlocProvider.of<StyledImageBloc>(context);
+
+        if (_box.isNotEmpty) {
+          final ratio = _box.get('mix-ratio');
+          bloc.add(StyledImageMixRatioChanged(ratio));
+        }
 
         return Card(
           child: Padding(
@@ -169,6 +178,7 @@ class MixSlider extends StatelessWidget {
                   max: 1.0,
                   onChanged: (value) {
                     bloc.add(StyledImageMixRatioChanged(value));
+                    _box.put('mix-ratio', value);
                   },
                 ),
               ],
@@ -181,9 +191,7 @@ class MixSlider extends StatelessWidget {
 }
 
 class ActionButtons extends StatelessWidget {
-  const ActionButtons({
-    super.key,
-  });
+  const ActionButtons({super.key});
 
   @override
   Widget build(BuildContext context) {

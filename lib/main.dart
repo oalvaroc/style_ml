@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:style_ml/pages/home_page.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'pages/about_page.dart';
 import 'pages/camera_page.dart';
@@ -8,8 +9,13 @@ import 'pages/login_page.dart';
 import 'pages/style_page.dart';
 import 'widgets/galleryGrid/bloc/gallery_posts_bloc.dart';
 
-main() {
+Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await Hive.initFlutter();
+  await Hive.openBox('login');
+  await Hive.openBox('style');
+
   runApp(const App());
 }
 

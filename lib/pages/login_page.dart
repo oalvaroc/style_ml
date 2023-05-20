@@ -18,8 +18,8 @@ class _LoginPageState extends State<LoginPage> {
       create: (context) => LoginBloc(),
       child: BlocListener<LoginBloc, LoginState>(
         listener: (context, state) {
-          if (state.status == LoginStatus.success) {
-            Navigator.of(context).pushNamed('/home');
+          if (state is LoginSuccess) {
+            Navigator.of(context).popAndPushNamed('/home');
           }
         },
         child: Scaffold(

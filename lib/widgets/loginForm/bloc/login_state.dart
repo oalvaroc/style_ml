@@ -7,9 +7,8 @@ enum LoginStatus {
 }
 
 @immutable
-class LoginState {
+abstract class LoginState {
   const LoginState({
-    required this.isPasswordVisible,
     required this.email,
     required this.password,
     required this.status,
@@ -19,28 +18,33 @@ class LoginState {
       : this(
           email: '',
           password: '',
-          isPasswordVisible: false,
           status: LoginStatus.notSubmitted,
         );
 
-  final bool isPasswordVisible;
   final String email;
   final String password;
   final LoginStatus status;
+}
 
-  LoginState copyWith({
-    bool? isPasswordVisible,
-    String? email,
-    String? password,
-    LoginStatus? status,
-  }) {
-    return LoginState(
-      isPasswordVisible: isPasswordVisible ?? this.isPasswordVisible,
-      email: email ?? this.email,
-      password: password ?? this.password,
-      status: status ?? this.status,
-    );
-  }
+class LoginInitial extends LoginState {
+  const LoginInitial()
+      : super(email: "", password: "", status: LoginStatus.notSubmitted);
+}
 
-  bool get isComplete => email.isNotEmpty && password.isNotEmpty;
+class LoginSuccess extends LoginState {
+  const LoginSuccess({
+    required String email,
+    required String password,
+  }) : super(email: email, password: password, status: LoginStatus.success);
+
+  LoginSuccess.from(LoginState s) : this(email: s.email, password: s.password);
+}
+
+class LoginFailure extends LoginState {
+  const LoginFailure({
+    required String email,
+    required String password,
+  }) : super(email: email, password: password, status: LoginStatus.failure);
+
+  LoginFailure.from(LoginState s) : this(email: s.email, password: s.password);
 }

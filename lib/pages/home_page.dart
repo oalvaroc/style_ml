@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import '../widgets/discoverGrid/discover_grid.dart';
 import '../widgets/galleryGrid/gallery_grid.dart';
@@ -12,6 +13,7 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentPage = 0;
+  final _box = Hive.box('login');
 
   @override
   Widget build(BuildContext context) {
@@ -27,8 +29,10 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.info_outline),
           ),
           IconButton(
-            onPressed: () {
-              Navigator.of(context).pop();
+            onPressed: () async {
+              await _box
+                  .clear()
+                  .then((_) => Navigator.of(context).pushReplacementNamed('/'));
             },
             icon: const Icon(Icons.logout),
           ),

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 import 'bloc/login_bloc.dart';
 
@@ -11,18 +12,33 @@ class LoginForm extends StatefulWidget {
 }
 
 class _LoginFormState extends State<LoginForm> {
+  String _email = "";
+  String _password = "";
+  bool _isPasswordVisible = false;
+
+  final _box = Hive.box('login');
+
   @override
   Widget build(BuildContext context) {
     return BlocBuilder<LoginBloc, LoginState>(
       builder: (context, state) {
         final bloc = BlocProvider.of<LoginBloc>(context);
 
+        if (_box.isNotEmpty) {
+          final email = _box.get('email');
+          final password = _box.get('password');
+          bloc.add(LoginRestored(email, password));
+          return Container();
+        }
+
         return Form(
           child: Column(
             children: [
               TextFormField(
                 onChanged: (value) {
-                  bloc.add(LoginEmailChanged(value));
+                  setState(() {
+                    _email = value;
+                  });
                 },
                 decoration: const InputDecoration(
                   label: Text('Email'),
@@ -30,17 +46,21 @@ class _LoginFormState extends State<LoginForm> {
               ),
               TextFormField(
                 onChanged: (value) {
-                  bloc.add(LoginPasswordChanged(value));
+                  setState(() {
+                    _password = value;
+                  });
                 },
-                obscureText: !state.isPasswordVisible,
+                obscureText: !_isPasswordVisible,
                 decoration: InputDecoration(
                   label: const Text('Password'),
                   suffixIcon: IconButton(
                     onPressed: () {
-                      bloc.add(LoginPasswordVisibilityToggled());
+                      setState(() {
+                        _isPasswordVisible = !_isPasswordVisible;
+                      });
                     },
                     icon: Icon(
-                      state.isPasswordVisible
+                      _isPasswordVisible
                           ? Icons.visibility
                           : Icons.visibility_off,
                     ),
@@ -54,11 +74,19 @@ class _LoginFormState extends State<LoginForm> {
                   children: [
                     Expanded(
                       child: FilledButton(
-                        onPressed: !state.isComplete
-                            ? null
-                            : () {
-                                bloc.add(LoginSubmitted());
-                              },
+                        onPressed: _email.isNotEmpty && _password.isNotEmpty
+                            ? () async {
+                                await _box.put('email', _email);
+                                await _box.put('password', _password);
+
+                                bloc.add(
+                                  LoginSubmitted(
+                                    email: _email,
+                                    password: _password,
+                                  ),
+                                );
+                              }
+                            : null,
                         child: const Text('Login'),
                       ),
                     ),
