@@ -67,6 +67,6 @@ class StyledImageBloc extends Bloc<StyledImageEvent, StyledImageState> {
       state.source!,
       state.mixRatio!,
     );
-    return img.encodeJpg(resImage!);
+    return img.encodeJpg(resImage!, quality: 100);
   }
 }

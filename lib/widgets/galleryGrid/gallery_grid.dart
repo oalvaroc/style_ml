@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
-import 'bloc/gallery_posts_bloc.dart';
+import 'package:style_ml/bloc/post_manager_bloc.dart';
+import 'package:style_ml/bloc/post_monitor_bloc.dart';
 
 class GalleryGrid extends StatefulWidget {
   const GalleryGrid({super.key});
@@ -13,14 +13,8 @@ class GalleryGrid extends StatefulWidget {
 class _GalleryGridState extends State<GalleryGrid> {
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<GalleryPostsBloc, GalleryPostsState>(
+    return BlocBuilder<PostMonitorBloc, PostMonitorState>(
       builder: (context, state) {
-        final bloc = BlocProvider.of<GalleryPostsBloc>(context);
-
-        if (!state.isInit) {
-          bloc.add(GalleryPostsStarted());
-        }
-
         return GridView.builder(
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
@@ -29,7 +23,8 @@ class _GalleryGridState extends State<GalleryGrid> {
           ),
           itemCount: state.posts.length,
           itemBuilder: (context, index) {
-            final post = state.posts[index];
+            final post = state.posts.getByIndex(index)!;
+            final postId = state.posts.getIdOfIndex(index);
 
             return Stack(
               fit: StackFit.passthrough,
@@ -101,7 +96,9 @@ class _GalleryGridState extends State<GalleryGrid> {
                               ),
                               TextButton(
                                 onPressed: () {
-                                  bloc.add(GalleryPostsDeleted(id: post.id));
+                                  BlocProvider.of<PostManagerBloc>(context)
+                                      .add(DeleteEvent(postId: postId));
+
                                   Navigator.of(context).pop();
                                   ScaffoldMessenger.of(context).showSnackBar(
                                     const SnackBar(
@@ -121,6 +118,28 @@ class _GalleryGridState extends State<GalleryGrid> {
                       );
                     },
                     icon: const Icon(Icons.delete),
+                    style: ButtonStyle(
+                      shape: MaterialStateProperty.all(const CircleBorder()),
+                      backgroundColor: MaterialStateProperty.all(
+                        Colors.white38,
+                      ),
+                    ),
+                  ),
+                ),
+                Positioned(
+                  bottom: 0,
+                  right: 0,
+                  child: IconButton(
+                    onPressed: () {
+                      BlocProvider.of<PostManagerBloc>(context).add(
+                        UpdateEvent(
+                          postId: postId,
+                          post: post.copyWith(published: !post.published),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.public),
+                    isSelected: post.published,
                     style: ButtonStyle(
                       shape: MaterialStateProperty.all(const CircleBorder()),
                       backgroundColor: MaterialStateProperty.all(

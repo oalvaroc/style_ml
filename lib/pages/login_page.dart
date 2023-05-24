@@ -14,32 +14,29 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
-    return BlocProvider<LoginBloc>(
-      create: (context) => LoginBloc(),
-      child: BlocListener<LoginBloc, LoginState>(
-        listener: (context, state) {
-          if (state is LoginSuccess) {
-            Navigator.of(context).popAndPushNamed('/home');
-          }
-        },
-        child: Scaffold(
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: const [
-                Text(
-                  'StyleML',
-                  style: TextStyle(
-                    fontSize: 60,
-                    fontWeight: FontWeight.w200,
-                  ),
+    return BlocListener<LoginBloc, LoginState>(
+      listener: (context, state) {
+        if (state is LoginSuccess) {
+          Navigator.of(context).popAndPushNamed('/home');
+        }
+      },
+      child: Scaffold(
+        body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: const [
+              Text(
+                'StyleML',
+                style: TextStyle(
+                  fontSize: 60,
+                  fontWeight: FontWeight.w200,
                 ),
-                Padding(
-                  padding: EdgeInsets.all(24.0),
-                  child: LoginForm(),
-                ),
-              ],
-            ),
+              ),
+              Padding(
+                padding: EdgeInsets.all(24.0),
+                child: LoginForm(),
+              ),
+            ],
           ),
         ),
       ),

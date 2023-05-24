@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:style_ml/bloc/post_manager_bloc.dart';
+import 'package:style_ml/bloc/post_monitor_bloc.dart';
 import 'package:style_ml/pages/home_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:style_ml/widgets/loginForm/bloc/login_bloc.dart';
 
 import 'pages/about_page.dart';
 import 'pages/camera_page.dart';
 import 'pages/login_page.dart';
 import 'pages/style_page.dart';
-import 'widgets/galleryGrid/bloc/gallery_posts_bloc.dart';
+//import 'widgets/galleryGrid/bloc/gallery_posts_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,9 +29,9 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(
-          create: (context) => GalleryPostsBloc(),
-        ),
+        BlocProvider(create: (context) => LoginBloc()),
+        BlocProvider(create: (context) => PostManagerBloc()),
+        BlocProvider(create: (context) => PostMonitorBloc()),
       ],
       child: MaterialApp(
         title: 'StyleIt',

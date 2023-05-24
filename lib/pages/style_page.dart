@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as img;
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:style_ml/bloc/post_manager_bloc.dart';
+import 'package:style_ml/bloc/post_monitor_bloc.dart';
+import 'package:style_ml/models/post.dart';
 
-import '../widgets/galleryGrid/bloc/gallery_posts_bloc.dart';
 import '../widgets/styledImage/bloc/styled_image_bloc.dart';
 import '../widgets/styledImage/styled_image.dart';
 
@@ -210,24 +212,22 @@ class ActionButtons extends StatelessWidget {
               label: const Text('Run'),
               icon: const Icon(Icons.play_arrow),
             ),
-            BlocBuilder<GalleryPostsBloc, GalleryPostsState>(
-              builder: (context, state) {
-                final gallery = BlocProvider.of<GalleryPostsBloc>(context);
-
-                return ElevatedButton.icon(
-                  onPressed: () {
-                    gallery.add(GalleryPostsCreated(image: result!));
-                    Navigator.of(context).pop();
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        content: Text('Post saved'),
-                      ),
-                    );
-                  },
-                  label: const Text('Save'),
-                  icon: const Icon(Icons.save),
+            ElevatedButton.icon(
+              onPressed: () {
+                BlocProvider.of<PostManagerBloc>(context).add(
+                  InsertEvent(
+                    post: Post(image: result!, likes: []),
+                  ),
+                );
+                Navigator.of(context).pop();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Post saved'),
+                  ),
                 );
               },
+              label: const Text('Save'),
+              icon: const Icon(Icons.save),
             ),
           ],
         );

@@ -9,42 +9,32 @@ enum LoginStatus {
 @immutable
 abstract class LoginState {
   const LoginState({
-    required this.email,
-    required this.password,
+    required this.user,
     required this.status,
   });
 
-  const LoginState.initial()
-      : this(
-          email: '',
-          password: '',
-          status: LoginStatus.notSubmitted,
-        );
-
-  final String email;
-  final String password;
+  final User user;
   final LoginStatus status;
 }
 
 class LoginInitial extends LoginState {
   const LoginInitial()
-      : super(email: "", password: "", status: LoginStatus.notSubmitted);
+      : super(
+          user: const User(email: "", password: ""),
+          status: LoginStatus.notSubmitted,
+        );
 }
 
 class LoginSuccess extends LoginState {
-  const LoginSuccess({
-    required String email,
-    required String password,
-  }) : super(email: email, password: password, status: LoginStatus.success);
+  const LoginSuccess({required User user})
+      : super(user: user, status: LoginStatus.success);
 
-  LoginSuccess.from(LoginState s) : this(email: s.email, password: s.password);
+  LoginSuccess.from(LoginState s) : this(user: s.user);
 }
 
 class LoginFailure extends LoginState {
-  const LoginFailure({
-    required String email,
-    required String password,
-  }) : super(email: email, password: password, status: LoginStatus.failure);
+  const LoginFailure({required User user})
+      : super(user: user, status: LoginStatus.failure);
 
-  LoginFailure.from(LoginState s) : this(email: s.email, password: s.password);
+  LoginFailure.from(LoginState s) : this(user: s.user);
 }
