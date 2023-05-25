@@ -8,7 +8,7 @@ import 'package:style_ml/providers/data_provider.dart';
 
 class RestProvider implements DataProvider {
   static final helper = RestProvider._createInstance();
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'http://192.168.0.107:8080'));
+  final Dio _dio = Dio(BaseOptions(baseUrl: 'https://stylemlbackend-production.up.railway.app'));
   StreamController? _controller;
 
   RestProvider._createInstance();
@@ -61,6 +61,7 @@ class RestProvider implements DataProvider {
                 ),
               )
               .toList(),
+          'published': value['published'],
         }),
       );
     });

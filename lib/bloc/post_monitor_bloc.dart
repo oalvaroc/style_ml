@@ -4,28 +4,44 @@ import 'package:style_ml/models/post_collection.dart';
 import 'package:style_ml/providers/rest_provider.dart';
 
 class PostMonitorBloc extends Bloc<PostMonitorEvent, PostMonitorState> {
-  PostMonitorBloc() : super(PostMonitorState(posts: PostCollection())) {
+  PostMonitorBloc() : super(PostsReady(posts: PostCollection())) {
     RestProvider.helper.stream.listen((event) {
+      if (state is! PostsReady) {
+        return;
+      }
+
       String postId = event[0];
       Post? post = event[1];
+
       if (post != null) {
-        state.posts.updateOrInsert(postId, post);
+        (state as PostsReady).posts.updateOrInsert(postId, post);
       } else {
-        state.posts.delete(postId);
+        (state as PostsReady).posts.delete(postId);
       }
 
       add(UpdatePostsEvent());
     });
 
     on<UpdatePostsEvent>((event, emit) {
-      emit(PostMonitorState(posts: state.posts));
+      if (state is PostsReady) {
+        emit(PostsReady(posts: (state as PostsReady).posts));
+      }
     });
 
     on<FetchPostsEvent>((event, emit) async {
+      emit(PostsLoading());
       final posts = await RestProvider.helper.fetchPosts();
-      emit(PostMonitorState(posts: posts));
+      print('fetched: ${posts.length}');
+      emit(PostsReady(posts: posts));
     });
+
     add(FetchPostsEvent());
+  }
+
+  @override
+  void onTransition(Transition<PostMonitorEvent, PostMonitorState> transition) {
+    super.onTransition(transition);
+    print('transition: $transition');
   }
 }
 
@@ -37,8 +53,12 @@ class FetchPostsEvent extends PostMonitorEvent {}
 class UpdatePostsEvent extends PostMonitorEvent {}
 
 // State
-class PostMonitorState {
-  PostMonitorState({required this.posts});
+class PostMonitorState {}
+
+class PostsLoading extends PostMonitorState {}
+
+class PostsReady extends PostMonitorState {
+  PostsReady({required this.posts});
 
   final PostCollection posts;
 }
