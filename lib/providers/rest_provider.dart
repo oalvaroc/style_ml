@@ -8,7 +8,8 @@ import 'package:style_ml/providers/data_provider.dart';
 
 class RestProvider implements DataProvider {
   static final helper = RestProvider._createInstance();
-  final Dio _dio = Dio(BaseOptions(baseUrl: 'https://stylemlbackend-production.up.railway.app'));
+  final Dio _dio = Dio(
+      BaseOptions(baseUrl: 'https://stylemlbackend-production.up.railway.app'));
   StreamController? _controller;
 
   RestProvider._createInstance();
@@ -54,7 +55,6 @@ class RestProvider implements DataProvider {
               .map(
                 (userData) => User.fromMap(
                   {
-                    'name': userData['name'],
                     'email': userData['email'],
                     'password': userData['password'],
                   },

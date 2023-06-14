@@ -17,10 +17,7 @@ class _GalleryGridState extends State<GalleryGrid> {
       onRefresh: () async {
         final bloc = BlocProvider.of<PostMonitorBloc>(context)
           ..add(FetchPostsEvent());
-        await bloc.stream.firstWhere((element) {
-          print(element);
-          return element is PostsReady;
-        });
+        await bloc.stream.firstWhere((element) => element is PostsReady);
       },
       child: BlocBuilder<PostMonitorBloc, PostMonitorState>(
         builder: (context, state) {

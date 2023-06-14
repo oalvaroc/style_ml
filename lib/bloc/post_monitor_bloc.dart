@@ -31,17 +31,10 @@ class PostMonitorBloc extends Bloc<PostMonitorEvent, PostMonitorState> {
     on<FetchPostsEvent>((event, emit) async {
       emit(PostsLoading());
       final posts = await RestProvider.helper.fetchPosts();
-      print('fetched: ${posts.length}');
       emit(PostsReady(posts: posts));
     });
 
     add(FetchPostsEvent());
-  }
-
-  @override
-  void onTransition(Transition<PostMonitorEvent, PostMonitorState> transition) {
-    super.onTransition(transition);
-    print('transition: $transition');
   }
 }
 
