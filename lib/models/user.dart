@@ -6,7 +6,7 @@ class User extends Equatable {
     required this.password,
   });
 
-  User.fromMap(Map<String, String> map)
+  User.fromMap(Map<String, dynamic> map)
       : this(
           email: map['email']!,
           password: map['password']!,

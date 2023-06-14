@@ -14,7 +14,7 @@ class Post extends Equatable {
   Post.fromMap(Map<String, dynamic> map)
       : this(
           image: base64.decode(map['image'] as String),
-          likes: map['likes'],
+          likes: (map['likes'] as List).map((u) => User.fromMap(u)).toList(),
           published: map['published'],
         );
 

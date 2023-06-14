@@ -4,7 +4,10 @@ import 'package:style_ml/bloc/post_manager_bloc.dart';
 import 'package:style_ml/bloc/post_monitor_bloc.dart';
 import 'package:style_ml/pages/home_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:style_ml/providers/provider_factory.dart';
 import 'package:style_ml/widgets/loginForm/bloc/login_bloc.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'pages/about_page.dart';
 import 'pages/camera_page.dart';
@@ -19,6 +22,10 @@ Future<void> main() async {
   await Hive.openBox('login');
   await Hive.openBox('style');
 
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(const App());
 }
 
@@ -30,8 +37,14 @@ class App extends StatelessWidget {
     return MultiBlocProvider(
       providers: [
         BlocProvider(create: (context) => LoginBloc()),
-        BlocProvider(create: (context) => PostManagerBloc()),
-        BlocProvider(create: (context) => PostMonitorBloc()),
+        BlocProvider(
+          create: (context) =>
+              PostManagerBloc(FirestoreProviderFactory.instance.provider),
+        ),
+        BlocProvider(
+          create: (context) =>
+              PostMonitorBloc(FirestoreProviderFactory.instance.provider),
+        ),
       ],
       child: MaterialApp(
         title: 'StyleIt',

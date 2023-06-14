@@ -1,17 +1,19 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:style_ml/models/post.dart';
-import 'package:style_ml/providers/rest_provider.dart';
+import 'package:style_ml/providers/data_provider.dart';
 
 class PostManagerBloc extends Bloc<PostManagerEvent, PostManagerState> {
-  PostManagerBloc() : super(PostManagerInitial()) {
+  final DataProvider _provider;
+
+  PostManagerBloc(this._provider) : super(PostManagerInitial()) {
     on<InsertEvent>((event, emit) {
-      RestProvider.helper.insertPost(event.post);
+      _provider.insertPost(event.post);
     });
     on<UpdateEvent>((event, emit) {
-      RestProvider.helper.updatePost(event.postId, event.post);
+      _provider.updatePost(event.postId, event.post);
     });
     on<DeleteEvent>((event, emit) {
-      RestProvider.helper.deletePost(event.postId);
+      _provider.deletePost(event.postId);
     });
   }
 }

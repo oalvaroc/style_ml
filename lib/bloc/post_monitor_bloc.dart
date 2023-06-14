@@ -1,36 +1,29 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:style_ml/models/post.dart';
 import 'package:style_ml/models/post_collection.dart';
-import 'package:style_ml/providers/rest_provider.dart';
+import 'package:style_ml/providers/data_provider.dart';
 
 class PostMonitorBloc extends Bloc<PostMonitorEvent, PostMonitorState> {
-  PostMonitorBloc() : super(PostsReady(posts: PostCollection())) {
-    RestProvider.helper.stream.listen((event) {
+  final DataProvider _provider;
+  PostCollection _postCollection = PostCollection();
+
+  PostMonitorBloc(this._provider) : super(PostsReady(posts: PostCollection())) {
+    _provider.stream.listen((event) {
       if (state is! PostsReady) {
         return;
       }
-
-      String postId = event[0];
-      Post? post = event[1];
-
-      if (post != null) {
-        (state as PostsReady).posts.updateOrInsert(postId, post);
-      } else {
-        (state as PostsReady).posts.delete(postId);
-      }
-
+      _postCollection = event;
       add(UpdatePostsEvent());
     });
 
     on<UpdatePostsEvent>((event, emit) {
       if (state is PostsReady) {
-        emit(PostsReady(posts: (state as PostsReady).posts));
+        emit(PostsReady(posts: _postCollection));
       }
     });
 
     on<FetchPostsEvent>((event, emit) async {
       emit(PostsLoading());
-      final posts = await RestProvider.helper.fetchPosts();
+      final posts = await _provider.fetchPosts();
       emit(PostsReady(posts: posts));
     });
 
