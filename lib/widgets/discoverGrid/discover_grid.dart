@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
 import 'package:style_ml/bloc/post_monitor_bloc.dart';
-import 'package:style_ml/models/post.dart';
 import 'package:style_ml/models/user.dart';
-import 'package:style_ml/widgets/loginForm/bloc/login_bloc.dart';
 
 class DiscoverGrid extends StatefulWidget {
   const DiscoverGrid({super.key});
@@ -14,8 +13,6 @@ class DiscoverGrid extends StatefulWidget {
 }
 
 class _DiscoverGridState extends State<DiscoverGrid> {
-  final Set<int> _likedPosts = {};
-
   @override
   Widget build(BuildContext context) {
     return RefreshIndicator(
@@ -96,11 +93,11 @@ class _DiscoverGridState extends State<DiscoverGrid> {
                     top: 0,
                     child: Column(
                       children: [
-                        BlocBuilder<LoginBloc, LoginState>(
+                        BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return IconButton(
                               onPressed: () {
-                                List<User> likes = [];
+                                List<UserModel> likes = [];
 
                                 if (post.likes.contains(state.user)) {
                                   likes = post.likes
@@ -117,7 +114,8 @@ class _DiscoverGridState extends State<DiscoverGrid> {
                                   ),
                                 );
                               },
-                              isSelected: post.likes.contains(state.user),
+                              isSelected: post.likes
+                                  .contains((state as Authenticated).user),
                               icon: const Icon(Icons.thumb_up),
                               style: ButtonStyle(
                                 shape: MaterialStateProperty.all(

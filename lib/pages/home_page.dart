@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:style_ml/bloc/auth_bloc.dart';
 
 import '../widgets/discoverGrid/discover_grid.dart';
 import '../widgets/galleryGrid/gallery_grid.dart';
@@ -29,10 +31,9 @@ class _HomePageState extends State<HomePage> {
             icon: const Icon(Icons.info_outline),
           ),
           IconButton(
-            onPressed: () async {
-              await _box
-                  .clear()
-                  .then((_) => Navigator.of(context).pushReplacementNamed('/'));
+            onPressed: () {
+              Navigator.of(context).pushReplacementNamed('/');
+              BlocProvider.of<AuthBloc>(context).add(SignOutEvent());
             },
             icon: const Icon(Icons.logout),
           ),

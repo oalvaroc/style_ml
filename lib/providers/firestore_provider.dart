@@ -14,12 +14,12 @@ class FirestoreProvider implements DataProvider {
   }
 
   @override
-  void insertPost(Post post) {
+  void insertPost(PostModel post) {
     _postCollection.add(post.toMap());
   }
 
   @override
-  void updatePost(String postId, Post post) {
+  void updatePost(String postId, PostModel post) {
     _postCollection.doc(postId).update(post.toMap());
   }
 
@@ -37,7 +37,7 @@ class FirestoreProvider implements DataProvider {
   PostCollection _snapshotToCollection(QuerySnapshot<Map<String, dynamic>> s) {
     final posts = PostCollection();
     for (final doc in s.docs) {
-      final post = Post.fromMap(doc.data());
+      final post = PostModel.fromMap(doc.data());
       posts.insert(doc.id, post);
     }
     return posts;

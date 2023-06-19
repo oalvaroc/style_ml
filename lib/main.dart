@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
 import 'package:style_ml/bloc/post_monitor_bloc.dart';
 import 'package:style_ml/pages/home_page.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:style_ml/pages/register_page.dart';
+import 'package:style_ml/providers/firebase_auth_provider.dart';
 import 'package:style_ml/providers/provider_factory.dart';
-import 'package:style_ml/widgets/loginForm/bloc/login_bloc.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
@@ -13,7 +15,6 @@ import 'pages/about_page.dart';
 import 'pages/camera_page.dart';
 import 'pages/login_page.dart';
 import 'pages/style_page.dart';
-//import 'widgets/galleryGrid/bloc/gallery_posts_bloc.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -36,7 +37,7 @@ class App extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => LoginBloc()),
+        BlocProvider(create: (context) => AuthBloc(FirebaseAuthProvider())),
         BlocProvider(
           create: (context) =>
               PostManagerBloc(FirestoreProviderFactory.instance.provider),
@@ -54,6 +55,7 @@ class App extends StatelessWidget {
         ),
         routes: {
           '/': (context) => const LoginPage(),
+          '/register': (context) => const RegisterPage(),
           '/camera': (context) => const CameraPage(),
           '/home': (context) => const HomePage(),
           '/style': (context) => const StylePage(),

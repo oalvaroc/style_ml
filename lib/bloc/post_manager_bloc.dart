@@ -24,7 +24,7 @@ class PostManagerEvent {}
 class InsertEvent extends PostManagerEvent {
   InsertEvent({required this.post});
 
-  final Post post;
+  final PostModel post;
 }
 
 class DeleteEvent extends PostManagerEvent {
@@ -37,7 +37,7 @@ class UpdateEvent extends PostManagerEvent {
   UpdateEvent({required this.postId, required this.post});
 
   final String postId;
-  final Post post;
+  final PostModel post;
 }
 
 // State

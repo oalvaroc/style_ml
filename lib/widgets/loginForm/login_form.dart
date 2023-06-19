@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import 'bloc/login_bloc.dart';
+import 'package:style_ml/bloc/auth_bloc.dart';
 
 class LoginForm extends StatefulWidget {
   const LoginForm({super.key});
@@ -20,16 +19,16 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<LoginBloc, LoginState>(
+    return BlocBuilder<AuthBloc, AuthState>(
       builder: (context, state) {
-        final bloc = BlocProvider.of<LoginBloc>(context);
+        final bloc = BlocProvider.of<AuthBloc>(context);
 
-        if (_box.isNotEmpty) {
+        /* if (_box.isNotEmpty) {
           final email = _box.get('email');
           final password = _box.get('password');
           bloc.add(LoginRestored(email, password));
           return Container();
-        }
+        } */
 
         return Form(
           child: Column(
@@ -80,7 +79,7 @@ class _LoginFormState extends State<LoginForm> {
                                 await _box.put('password', _password);
 
                                 bloc.add(
-                                  LoginSubmitted(
+                                  SignInEvent(
                                     email: _email,
                                     password: _password,
                                   ),

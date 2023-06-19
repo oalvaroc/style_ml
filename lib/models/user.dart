@@ -1,27 +1,18 @@
 import 'package:equatable/equatable.dart';
 
-class User extends Equatable {
-  const User({
-    required this.email,
-    required this.password,
-  });
+class UserModel extends Equatable {
+  const UserModel({required this.uid});
 
-  User.fromMap(Map<String, dynamic> map)
-      : this(
-          email: map['email']!,
-          password: map['password']!,
-        );
+  UserModel.fromMap(Map<String, dynamic> map) : this(uid: map['uid']);
 
-  final String email;
-  final String password;
+  final String uid;
 
   @override
-  List<Object?> get props => [email, password];
+  List<Object?> get props => [uid];
 
   Map<String, String> toMap() {
     return {
-      'email': email,
-      'password': password,
+      'uid': uid,
     };
   }
 }

@@ -2,7 +2,7 @@ import 'package:style_ml/models/post.dart';
 
 class PostCollection {
   final List<String> _ids = [];
-  final Map<String, Post> _posts = {};
+  final Map<String, PostModel> _posts = {};
 
   int get length {
     return _ids.length;
@@ -16,7 +16,7 @@ class PostCollection {
     return collection;
   }
 
-  void insert(String id, Post post) {
+  void insert(String id, PostModel post) {
     _ids.add(id);
     _posts[id] = post;
   }
@@ -27,13 +27,13 @@ class PostCollection {
     _posts.remove(id);
   }
 
-  void update(String id, Post post) {
+  void update(String id, PostModel post) {
     if (_posts.containsKey(id)) {
       _posts[id] = post;
     }
   }
 
-  void updateOrInsert(String id, Post post) {
+  void updateOrInsert(String id, PostModel post) {
     if (_posts.containsKey(id)) {
       update(id, post);
     } else {
@@ -41,11 +41,11 @@ class PostCollection {
     }
   }
 
-  Post? getById(String id) {
+  PostModel? getById(String id) {
     return _posts[id];
   }
 
-  Post? getByIndex(int index) {
+  PostModel? getByIndex(int index) {
     if (index < _ids.length) {
       String id = _ids[index];
       return _posts[id];

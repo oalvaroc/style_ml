@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image/image.dart' as img;
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
-import 'package:style_ml/bloc/post_monitor_bloc.dart';
 import 'package:style_ml/models/post.dart';
 
 import '../widgets/styledImage/bloc/styled_image_bloc.dart';
@@ -200,6 +200,7 @@ class ActionButtons extends StatelessWidget {
     return BlocBuilder<StyledImageBloc, StyledImageState>(
       builder: (context, state) {
         final bloc = BlocProvider.of<StyledImageBloc>(context);
+        final auth = BlocProvider.of<AuthBloc>(context).state as Authenticated;
         final result = state.result;
 
         return Row(
@@ -216,7 +217,11 @@ class ActionButtons extends StatelessWidget {
               onPressed: () {
                 BlocProvider.of<PostManagerBloc>(context).add(
                   InsertEvent(
-                    post: Post(image: result!, likes: []),
+                    post: PostModel(
+                      author: auth.user,
+                      image: result!,
+                      likes: const [],
+                    ),
                   ),
                 );
                 Navigator.of(context).pop();
