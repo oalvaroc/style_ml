@@ -1,4 +1,4 @@
-import 'package:image/image.dart';
+import 'dart:typed_data';
 
 import 'style_ml_tflite_platform_interface.dart';
 
@@ -7,7 +7,8 @@ class StyleMlTflite {
     return StyleMlTflitePlatform.instance.getPlatformVersion();
   }
 
-  Future<Image?> transfer(Image styleImage, Image contentImage, double ratio) {
+  Future<Uint8List?> transfer(
+      Uint8List styleImage, Uint8List contentImage, double ratio) {
     return StyleMlTflitePlatform.instance
         .transfer(styleImage, contentImage, ratio);
   }

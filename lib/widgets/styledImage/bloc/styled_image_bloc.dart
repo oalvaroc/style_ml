@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:image/image.dart' as img;
+import 'package:style_ml/utils/image.dart';
 import 'package:style_ml_tflite/style_ml_tflite.dart';
 
 part 'styled_image_event.dart';
@@ -57,16 +58,16 @@ class StyledImageBloc extends Bloc<StyledImageEvent, StyledImageState> {
       return state.result;
     }
 
+    final contentImage = await ImageUtils.encodeJpg(state.source!);
     final styleImage = await rootBundle
         .load(state.style!.path)
-        .then((asset) => asset.buffer.asUint8List())
-        .then((bytes) => img.JpegDecoder().decode(bytes));
+        .then((asset) => asset.buffer.asUint8List());
 
     final resImage = await _styleTransfer.transfer(
-      styleImage!,
-      state.source!,
+      styleImage,
+      contentImage,
       state.mixRatio!,
     );
-    return img.encodeJpg(resImage!, quality: 100);
+    return resImage;
   }
 }

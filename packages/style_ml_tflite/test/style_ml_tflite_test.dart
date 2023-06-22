@@ -1,5 +1,6 @@
+import 'dart:typed_data';
+
 import 'package:flutter_test/flutter_test.dart';
-import 'package:image/src/image/image.dart';
 import 'package:style_ml_tflite/style_ml_tflite.dart';
 import 'package:style_ml_tflite/style_ml_tflite_platform_interface.dart';
 import 'package:style_ml_tflite/style_ml_tflite_method_channel.dart';
@@ -12,9 +13,10 @@ class MockStyleMlTflitePlatform
   Future<String?> getPlatformVersion() => Future.value('42');
 
   @override
-  Future<Image?> transfer(Image styleImage, Image contentImage, double ratio) {
+  Future<Uint8List?> transfer(
+      Uint8List styleImage, Uint8List contentImage, double ratio) {
     return Future.delayed(
-        const Duration(milliseconds: 500), () => Image.empty());
+        const Duration(milliseconds: 500), () => Uint8List(1));
   }
 }
 

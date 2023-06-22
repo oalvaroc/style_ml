@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:camera/camera.dart';
 import 'package:meta/meta.dart';
 import 'package:image/image.dart' as img;
+import 'package:style_ml/utils/image.dart';
 
 part 'camera_event.dart';
 part 'camera_state.dart';
@@ -29,11 +30,11 @@ class CameraBloc extends Bloc<CameraEvent, CameraState> {
     final imageFile = await state.controller!.takePicture();
     final image = await imageFile
         .readAsBytes()
-        .then((bytes) => img.JpegDecoder().decode(bytes))
+        .then((bytes) => ImageUtils.decodeJpg(bytes))
         .then((image) =>
             state.currentCamera!.lensDirection == CameraLensDirection.front
-                ? img.flipHorizontal(image!)
-                : image!);
+                ? img.flipHorizontal(image)
+                : image);
 
     emit(state.copyWith(image: image));
   }

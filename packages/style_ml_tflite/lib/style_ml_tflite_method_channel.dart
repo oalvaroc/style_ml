@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:image/image.dart';
 
 import 'style_ml_tflite_platform_interface.dart';
 
@@ -18,27 +17,16 @@ class MethodChannelStyleMlTflite extends StyleMlTflitePlatform {
   }
 
   @override
-  Future<Image?> transfer(
-      Image styleImage, Image contentImage, double ratio) async {
-    debugPrint('> transfer: encoding');
-    final style = JpegEncoder().encode(styleImage);
-    final content = JpegEncoder().encode(contentImage);
-
-    debugPrint('> transfer: invoking');
+  Future<Uint8List?> transfer(
+      Uint8List styleImage, Uint8List contentImage, double ratio) async {
     final result = await methodChannel.invokeMethod<Uint8List>(
       'transfer',
       {
-        'styleImage': style,
-        'contentImage': content,
+        'styleImage': styleImage,
+        'contentImage': contentImage,
         'ratio': ratio,
       },
     );
-
-    debugPrint('> transfer: decoding');
-    if (result != null) {
-      return JpegDecoder().decode(result);
-    }
-
-    return Image.empty();
+    return result;
   }
 }

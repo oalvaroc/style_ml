@@ -1,5 +1,6 @@
+import 'dart:typed_data';
+
 import 'package:plugin_platform_interface/plugin_platform_interface.dart';
-import 'package:image/image.dart';
 
 import 'style_ml_tflite_method_channel.dart';
 
@@ -28,7 +29,7 @@ abstract class StyleMlTflitePlatform extends PlatformInterface {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 
-  Future<Image?> transfer(Image styleImage, Image contentImage, double ratio) {
+  Future<Uint8List?> transfer(Uint8List styleImage, Uint8List contentImage, double ratio) {
     throw UnimplementedError('platformVersion() has not been implemented.');
   }
 }
