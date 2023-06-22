@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
@@ -12,12 +13,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 import 'pages/about_page.dart';
-import 'pages/camera_page.dart';
 import 'pages/login_page.dart';
 import 'pages/style_page.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await SystemChrome.setPreferredOrientations([DeviceOrientation.portraitUp]);
 
   await Hive.initFlutter();
   await Hive.openBox('login');
@@ -56,7 +58,6 @@ class App extends StatelessWidget {
         routes: {
           '/': (context) => const LoginPage(),
           '/register': (context) => const RegisterPage(),
-          '/camera': (context) => const CameraPage(),
           '/home': (context) => const HomePage(),
           '/style': (context) => const StylePage(),
           '/about': (context) => const AboutPage(),

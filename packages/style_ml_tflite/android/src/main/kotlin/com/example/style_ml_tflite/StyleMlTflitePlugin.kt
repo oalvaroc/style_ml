@@ -44,14 +44,15 @@ class StyleMlTflitePlugin : FlutterPlugin, MethodCallHandler {
                 val styleImage = call.argument<ByteArray>("styleImage").let { bytes ->
                     BitmapFactory.decodeByteArray(bytes, 0, bytes!!.size)
                 }
-                val contentImage = call.argument<ByteArray>("contentImage").let { bytes ->
-                    BitmapFactory.decodeByteArray(bytes, 0, bytes!!.size)
-                }
+                val contentBytes = call.argument<ByteArray>("contentImage")
+                val orientation = ExifUtil.getOrientation(contentBytes!!)
+                val contentImage = BitmapFactory.decodeByteArray(contentBytes, 0, contentBytes.size)
                 val ratio = call.argument<Double>("ratio")
 
                 styleTransfer.transfer(styleImage, contentImage, ratio!!.toFloat()).let { output ->
                     val byteStream = ByteArrayOutputStream()
-                    output.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
+                    val fixed = ExifUtil.fixImage(output, orientation)
+                    fixed.compress(Bitmap.CompressFormat.JPEG, 100, byteStream)
                     result.success(byteStream.toByteArray())
                 }
 

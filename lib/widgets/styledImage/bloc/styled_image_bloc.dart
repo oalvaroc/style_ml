@@ -1,8 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
-import 'package:image/image.dart' as img;
-import 'package:style_ml/utils/image.dart';
 import 'package:style_ml_tflite/style_ml_tflite.dart';
 
 part 'styled_image_event.dart';
@@ -10,7 +8,7 @@ part 'styled_image_state.dart';
 
 class StyledImageBloc extends Bloc<StyledImageEvent, StyledImageState> {
   static final _styleTransfer = StyleMlTflite();
-  final img.Image source;
+  final Uint8List source;
 
   StyledImageBloc({required this.source})
       : super(StyledImageState.initial(source: source)) {
@@ -58,14 +56,13 @@ class StyledImageBloc extends Bloc<StyledImageEvent, StyledImageState> {
       return state.result;
     }
 
-    final contentImage = await ImageUtils.encodeJpg(state.source!);
     final styleImage = await rootBundle
         .load(state.style!.path)
         .then((asset) => asset.buffer.asUint8List());
 
     final resImage = await _styleTransfer.transfer(
       styleImage,
-      contentImage,
+      state.source!,
       state.mixRatio!,
     );
     return resImage;

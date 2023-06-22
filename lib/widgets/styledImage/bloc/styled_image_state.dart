@@ -23,7 +23,7 @@ class StyledImageState {
     this.isRunning = false,
   });
 
-  const StyledImageState.initial({required img.Image source})
+  const StyledImageState.initial({required Uint8List source})
       : this._(source: source, style: StyleNames.monalisa, mixRatio: 0.5);
 
   const StyledImageState({
@@ -34,14 +34,14 @@ class StyledImageState {
     required this.isRunning,
   });
 
-  final img.Image? source;
+  final Uint8List? source;
   final Uint8List? result;
   final StyleNames? style;
   final double? mixRatio;
   final bool isRunning;
 
   StyledImageState copyWith({
-    img.Image? source,
+    Uint8List? source,
     Uint8List? result,
     StyleNames? style,
     double? mixRatio,

@@ -6,7 +6,7 @@ abstract class StyledImageEvent {}
 class StyledImageSourceChanged extends StyledImageEvent {
   StyledImageSourceChanged(this.image);
 
-  final img.Image image;
+  final Uint8List image;
 }
 
 class StyledImageStyleChanged extends StyledImageEvent {

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:style_ml/models/post.dart';
 import 'package:style_ml/providers/data_provider.dart';
@@ -5,21 +6,33 @@ import 'package:style_ml/providers/data_provider.dart';
 class PostManagerBloc extends Bloc<PostManagerEvent, PostManagerState> {
   final DataProvider _provider;
 
-  PostManagerBloc(this._provider) : super(PostManagerInitial()) {
+  PostManagerBloc(this._provider) : super(InitialState()) {
+    on<CreateEvent>((event, emit) {
+      emit(CreateState(contentImage: event.contentImage));
+    });
     on<InsertEvent>((event, emit) {
       _provider.insertPost(event.post);
+      emit(InitialState());
     });
     on<UpdateEvent>((event, emit) {
       _provider.updatePost(event.postId, event.post);
+      emit(InitialState());
     });
     on<DeleteEvent>((event, emit) {
       _provider.deletePost(event.postId);
+      emit(InitialState());
     });
   }
 }
 
 // Events
 class PostManagerEvent {}
+
+class CreateEvent extends PostManagerEvent {
+  CreateEvent({required this.contentImage});
+
+  final Uint8List contentImage;
+}
 
 class InsertEvent extends PostManagerEvent {
   InsertEvent({required this.post});
@@ -43,4 +56,10 @@ class UpdateEvent extends PostManagerEvent {
 // State
 class PostManagerState {}
 
-class PostManagerInitial extends PostManagerState {}
+class InitialState extends PostManagerState {}
+
+class CreateState extends PostManagerState {
+  CreateState({required this.contentImage});
+
+  final Uint8List contentImage;
+}

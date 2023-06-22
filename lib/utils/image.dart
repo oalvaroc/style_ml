@@ -17,12 +17,22 @@ class ImageUtils {
     );
   }
 
+  static Future<Uint8List> fixOrientation(Uint8List image) async {
+    return await compute(_fixOrientation, image);
+  }
+
   static img.Image _decodeJpg(Uint8List bytes) {
     return img.decodeJpg(bytes)!;
   }
 
   static Uint8List _encodeJpg(_EncoderParams params) {
     return img.encodeJpg(params.image, quality: params.quality);
+  }
+
+  static Uint8List _fixOrientation(Uint8List bytes) {
+    final original = _decodeJpg(bytes);
+    final fixed = img.bakeOrientation(original);
+    return _encodeJpg(_EncoderParams(image: fixed, quality: 100));
   }
 }
 

@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:image/image.dart' as img;
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
@@ -244,5 +244,5 @@ class ActionButtons extends StatelessWidget {
 class StylePageArgs {
   StylePageArgs(this.image);
 
-  final img.Image image;
+  final Uint8List image;
 }
