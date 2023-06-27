@@ -4,7 +4,9 @@ enum StyleNames {
   monalisa(path: 'assets/davinci-mona-lisa.jpg'),
   blackAndViolet(path: 'assets/kandinsky-black-and-violet.jpg'),
   sunrise(path: 'assets/monet-sunrise.jpg'),
-  starryNight(path: 'assets/van-gogh-starry-night.jpg');
+  starryNight(path: 'assets/van-gogh-starry-night.jpg'),
+  colorStudy(path: 'assets/kandinsky-color-study.jpg'),
+  theScream(path: 'assets/munch-the-scream.jpg');
 
   const StyleNames({
     required this.path,
