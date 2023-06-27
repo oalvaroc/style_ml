@@ -8,7 +8,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   AuthBloc(this._provider) : super(Unauthenticated()) {
     _provider.stream.listen((user) {
-      print('Firebase auth: ${user?.uid}');
       add(AuthServerEvent(user: user));
     });
 
