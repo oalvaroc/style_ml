@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
@@ -18,7 +17,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int _currentPage = 0;
-  final _box = Hive.box('login');
   final _picker = ImagePicker();
 
   @override
