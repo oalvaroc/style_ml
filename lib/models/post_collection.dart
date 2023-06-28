@@ -16,6 +16,14 @@ class PostCollection {
     return collection;
   }
 
+  PostCollection fromUser(String uid) {
+    final collection = PostCollection();
+    _posts.entries
+        .where((element) => element.value.author.uid == uid)
+        .forEach((element) => collection.insert(element.key, element.value));
+    return collection;
+  }
+
   void insert(String id, PostModel post) {
     _ids.add(id);
     _posts[id] = post;

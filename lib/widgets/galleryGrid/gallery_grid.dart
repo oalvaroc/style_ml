@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
 import 'package:style_ml/bloc/post_monitor_bloc.dart';
 
@@ -27,16 +28,22 @@ class _GalleryGridState extends State<GalleryGrid> {
             );
           }
 
+          final uid =
+              (BlocProvider.of<AuthBloc>(context).state as Authenticated)
+                  .user
+                  .uid;
+          final userPosts = (state as PostsReady).posts.fromUser(uid);
+
           return GridView.builder(
             gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 10,
               mainAxisSpacing: 10,
             ),
-            itemCount: (state as PostsReady).posts.length,
+            itemCount: userPosts.length,
             itemBuilder: (context, index) {
-              final post = state.posts.getByIndex(index)!;
-              final postId = state.posts.getIdOfIndex(index);
+              final post = userPosts.getByIndex(index)!;
+              final postId = userPosts.getIdOfIndex(index);
 
               return Stack(
                 fit: StackFit.passthrough,
