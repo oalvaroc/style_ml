@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:style_ml/bloc/auth_bloc.dart';
 import 'package:style_ml/bloc/post_manager_bloc.dart';
@@ -18,6 +19,8 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _currentPage = 0;
   final _picker = ImagePicker();
+
+  final _box = Hive.box('style');
 
   @override
   Widget build(BuildContext context) {
@@ -48,6 +51,7 @@ class _HomePageState extends State<HomePage> {
               onPressed: () {
                 Navigator.of(context).pushReplacementNamed('/');
                 BlocProvider.of<AuthBloc>(context).add(SignOutEvent());
+                _box.clear();
               },
               icon: const Icon(Icons.logout),
             ),
